@@ -1,0 +1,14 @@
+{
+    "name": "loopsii",
+    "owner": {
+        "name": "Loopsii",
+        "url": "https://loopsii.com"
+    },
+    "plugins": [
+        {
+            "name": "loopsii-watch",
+            "source": "./",
+            "description": "Understand Loopsii screen-recording links natively — timestamped transcript, AI summary, screen frames, and video, straight from the recording's agent-readable manifest."
+        }
+    ]
+}
