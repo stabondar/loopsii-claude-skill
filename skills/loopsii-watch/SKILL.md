@@ -30,7 +30,7 @@ the HTML page, and do not download the video unless you need frame-level detail 
 | `recording` | title, `durationSec`, width/height, `createdAt` |
 | `summary` | the AI summary (markdown: TL;DR + sections) — often answers the question alone |
 | `transcript` | array of `{s, e, text}` utterances, timestamped in **seconds** |
-| `chapters` | topical sections |
+| `chapters` | topical sections — `{title, startHint, description?}`; `startHint` in seconds (null when derived from summary headings), `description` one sentence of what the section covers (absent on older recordings) |
 | `recommendedFrames` | 3–4 evenly spaced screen frames worth fetching first |
 | `apis.frame.urlTemplate` | `…/frames/{index}` — zero-based; frames are every `apis.frame.intervalSec` seconds |
 | `video.url` | a **time-limited signed URL** to the source MP4 (check `expiresAt`) |
@@ -41,9 +41,13 @@ the HTML page, and do not download the video unless you need frame-level detail 
 1. **Text questions** ("what is this about?", "what did they decide?"): answer from `summary` +
    `transcript`. Cite moments as `[m:ss]` so the user can jump there on the watch page.
 2. **Visual questions** ("what's on screen when…", "which button did they click?"): compute the
-   frame index `floor(t / intervalSec)` and GET that frame URL (returns JPEG). Fetch
-   `recommendedFrames` first for cheap orientation.
-3. **Frame-level review** (animation glitches, fast UI changes between frames): download
+   frame index `floor(t / intervalSec)` and GET that frame URL. Frame URLs answer with a
+   **302 redirect** to a short-lived signed URL — follow redirects (`curl -L -o frame.jpg <url>`);
+   a GET without `-L` saves an empty body and HEAD fails the signature check, both of which look
+   like a broken link but are not. Fetch `recommendedFrames` first for cheap orientation. Frames
+   are downscaled orientation stills — too small to read code or fine UI text; to READ on-screen
+   text use the video path below.
+3. **Frame-level review** (reading on-screen text, animation glitches, fast UI changes between frames): download
    `video.url` and extract frames locally around the suspect timestamp, e.g.
    `ffmpeg -ss <start> -to <end> -i video.mp4 -vsync 0 f_%03d.jpg`. The signed URL expires —
    re-fetch the manifest for a fresh one if needed.
