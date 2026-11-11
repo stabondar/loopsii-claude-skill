@@ -38,7 +38,7 @@ No skill installed? The manifest is self-describing — any agent can simply GET
 
 ## How it works
 
-Loopsii recordings are transcribed on-device by the Loopsii Mac app and published with an
+Loopsii recordings are transcribed on-device by Loopsii for Mac and published with an
 agent-native manifest (`type: loopsii.recording.context`). This skill just teaches your agent that
 the manifest exists and how to use it well: transcript + summary for text questions, the hosted
 frame strip for visual questions, and ffmpeg over the signed video URL for frame-level review.
